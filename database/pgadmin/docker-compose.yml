@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    env_file:
+      - docker-compose.env.yml
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - pgadmin
+
+volumes:
+  pgadmin:
+
+networks:
+  pgadmin:
+    name: pgadmin
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.1.0/24
+          gateway: 172.20.1.254
