@@ -4,6 +4,12 @@ services:
   postgres:
     image: postgres
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
     env_file:
       - docker-compose.postgres.env
     volumes:
@@ -14,6 +20,12 @@ services:
   redis:
     image: redis
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
     command:
       - /bin/sh
       - -c
@@ -22,6 +34,38 @@ services:
       - docker-compose.redis.env
     volumes:
       - /data/authentik/redis:/data
+    networks:
+      - authentik
+
+  server:
+    image: ghcr.io/goauthentik/server:2023.4.1
+    restart: unless-stopped
+    command: server
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - /data/authentik/media:/media
+      - /data/authentik/custom-templates:/templates
+    env_file:
+      - docker-compose.authentik.env
+    networks:
+      - authentik
+  worker:
+    image: ghcr.io/goauthentik/server:2023.4.1
+    restart: unless-stopped
+    command: worker
+    depends_on:
+      - postgres
+      - redis
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/authentik/media:/media
+      - /data/authentik/certs:/certs
+      - /data/authentik/custom-templates:/templates
+    env_file:
+      - docker-compose.authentik.env
     networks:
       - authentik
 
