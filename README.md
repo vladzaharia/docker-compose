@@ -8,23 +8,31 @@ Most services are configured with a corresponding `docker-compose.env` file whic
 
 ### Agebox
 
-[Agebox](https://github.com/slok/agebox) is used to encrypt and decrypt all environment files. Public keys (RSA SSH, Ed25519 SSH or Age X25519) are stored in `_agebox/keys`. The agebox binaries are found in `_agebox/lib` and can be downloaded by executing `_agebox/lib/download.sh`.
+[Agebox](https://github.com/slok/agebox) is used to encrypt and decrypt all environment files. Public keys (RSA SSH, Ed25519 SSH or Age X25519) are stored in `_agebox/keys`. 
+
+#### Git hooks
+
+Git hooks are available to help with encrypting on commit as well as decrypting on checkout/merge. They can be installed by running `_agebox/git/setup_git_hooks.sh`.
+
+#### Agebox binaries
+
+The agebox binaries are found in `_agebox/lib` and can be downloaded by executing `_agebox/lib/download.sh`.
+
+#### Helper script
 
 A helper script is found at `_agebox/agebox.sh` which calls the correct binary for your platform/architecture, provides some helper scripts, and adds necessary arguments for public key discovery.
 
-#### `_agebox/agebox.sh encrypt-all`
+##### `_agebox/agebox.sh encrypt-all`
 
 Encrypts all environment files, including new ones. 
 
-#### `_agebox/agebox.sh reencrypt`
+##### `_agebox/agebox.sh reencrypt`
 
 Re-encrypt axebox-tracked files in order to commit to Git.
 
-#### `_agebox/agebox.sh decrypt-all`
+##### `_agebox/agebox.sh decrypt-all`
 
 Decrypts all environment files, run if you see `docker-compose.env.agebox` files.
-
-
 
 ## Volumes
 
