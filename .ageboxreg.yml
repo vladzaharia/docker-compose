@@ -1,0 +1,6 @@
+file_ids:
+- database/pgadmin/docker-compose.env
+- infrastructure/authentik/docker-compose.authentik.env
+- infrastructure/authentik/docker-compose.postgres.env
+- infrastructure/authentik/docker-compose.redis.env
+version: "1"
