@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    env_file:
+      - docker-compose.postgres.env
+    volumes:
+      - /data/authentik/postgres:/var/lib/postgresql/data
+    networks:
+      - pgadmin
+      - authentik
+  redis:
+    image: redis
+    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    env_file:
+      - docker-compose.redis.env
+    volumes:
+      - /data/authentik/redis:/data
+    networks:
+      - authentik
+
+networks:
+  pgadmin:
+    name: pgadmin
+    external: true
+  authentik:
+    name: authentik
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.5.0/24
+          gateway: 172.25.5.254

@@ -26,9 +26,10 @@ Services which run without any dependencies can run on the default Docker networ
 
 ### `172.20.0.0/16` - Infrastructure
 
-| Subnet          | Network Name    | Description            |
-| --------------- | --------------- | ---------------------- |
-| `172.20.1.0/24` | `traefik`       | Traefik reverse proxy  |
+| Subnet          | Network Name    | Description                    |
+| --------------- | --------------- | ------------------------------ |
+| `172.20.1.0/24` | `traefik`       | Traefik reverse proxy          |
+| `172.20.5.0/24` | `authentik`     | Internal authentication system |
 
 ### `172.25.0.0/16` - Database Management
 

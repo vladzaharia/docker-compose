@@ -5,7 +5,7 @@ services:
     image: dpage/pgadmin4
     restart: unless-stopped
     env_file:
-      - docker-compose.env.yml
+      - docker-compose.env
     volumes:
       - pgadmin:/var/lib/pgadmin
     ports:

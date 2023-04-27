@@ -1,3 +1,3 @@
 # docker-compose env files
-**/docker-compose.env.yaml
-**/docker-compose.env.yml
+**/docker-compose.env
+**/docker-compose.*.env
