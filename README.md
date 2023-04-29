@@ -67,14 +67,19 @@ Services which run without any dependencies can run on the default Docker networ
 | `172.25.2.0/24` | `pgadmin`       | Postgres DB Management |
 | `172.25.5.0/24` | `mongo-express` | Mongo Management       |
 
-
 ### `172.30.0.0/16` - Media Services
 
 | Subnet           | Network Name    | Description                    |
 | ---------------- | --------------- | ------------------------------ |
-| `172.30.1.0/24`  | `prowlarr`      | Access to indexer for indexers |
-| `172.30.2.0/24`  | `sonarr`        | Access to indexer for TV shows |
-| `172.30.3.0/24`  | `radarr`        | Access to indexer for movies   |
-| `172.30.5.0/24`  | `plex`          | Access to indexer for Plex     |
-| `172.30.10.0/24` | `sabnzbd`       | Access to NZB downloader       |
-| `172.30.11.0/24` | `qbittorrent`   | Access to Torrent downloader   |
+| `172.30.1.0/24`  | `homepage`      | Homepage for all services      |
+
+### `172.31.0.0/16` - Media Services
+
+| Subnet           | Network Name    | Description                    |
+| ---------------- | --------------- | ------------------------------ |
+| `172.31.1.0/24`  | `prowlarr`      | Access to indexer for indexers |
+| `172.31.2.0/24`  | `sonarr`        | Access to indexer for TV shows |
+| `172.31.3.0/24`  | `radarr`        | Access to indexer for movies   |
+| `172.31.5.0/24`  | `plex`          | Access to indexer for Plex     |
+| `172.31.10.0/24` | `sabnzbd`       | Access to NZB downloader       |
+| `172.31.11.0/24` | `qbittorrent`   | Access to Torrent downloader   |

@@ -6,5 +6,6 @@ services:
     restart: always
     env_file:
       - docker-compose.env
+    network_mode: bridge
     volumes:
       - /data/cloudflareddns:/config

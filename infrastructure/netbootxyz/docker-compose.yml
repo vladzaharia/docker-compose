@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  netbootxyz:
+    image: ghcr.io/netbootxyz/netbootxyz:latest
+    restart: unless-stopped
+    volumes:
+      - /data/netbootxyz/config:/config
+      - /data/netbootxyz/assets:/assets
+    networks:
+      - traefik
+    ports:
+      - 69:69/udp
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.netbootxyz.entrypoints=websecure
+      - traefik.http.routers.netbootxyz.rule=Host(`netbootxyz.int.zhr.one`)
+      - traefik.http.routers.netbootxyz.tls.certresolver=acme
+      - traefik.http.services.netbootxyz.loadbalancer.server.port=3000
+      - homepage.group=Infrastructure
+      - homepage.name=Netbootxyz
+      # - homepage.icon=emby.png
+      - homepage.href=https://netbootxyz.int.zhr.one/
+      - homepage.description=LAN Netboot service
+
+networks:
+  traefik:
+    name: traefik
+    external: true

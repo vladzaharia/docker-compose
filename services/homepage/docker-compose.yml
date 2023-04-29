@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    restart: unless-stopped
+    volumes:
+      - /data/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.entrypoints=websecure
+      - traefik.http.routers.homepage.rule=Host(`home.zhr.one`)
+      - traefik.http.routers.homepage.tls.certresolver=acme
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+
+networks:
+  traefik:
+    name: traefik
+    external: true

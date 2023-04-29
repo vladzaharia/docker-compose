@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
-      start_period: 20s
-      interval: 30s
+      start_period: 10s
+      interval: 5s
       retries: 5
       timeout: 5s
     env_file:
@@ -23,13 +23,14 @@ services:
       - traefik.tcp.routers.authentik-postgres.entrypoints=postgres
       - traefik.tcp.routers.authentik-postgres.rule=HostSNI(`authentik.postgres.int.zhr.one`)
       - traefik.tcp.routers.authentik-postgres.tls.certresolver=acme
+      - traefik.tcp.services.authentik-postgres.loadbalancer.server.port=5432
   redis:
     image: redis
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      start_period: 20s
-      interval: 30s
+      test: 'redis-cli -a "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}" ping | grep PONG'
+      start_period: 10s
+      interval: 5s
       retries: 5
       timeout: 3s
     command:
@@ -41,13 +42,14 @@ services:
     volumes:
       - /data/authentik/redis:/data
     networks:
-      - traefik
       - authentik
+      - traefik
     labels:
       - traefik.enable=true
-      - traefik.tcp.routers.authentik-redis.entrypoints=redis
-      - traefik.tcp.routers.authentik-redis.rule=HostSNI(`authentik.redis.int.zhr.one`)
-      - traefik.tcp.routers.authentik-redis.tls.certresolver=acme
+      - traefik.tcp.routers.authentik-redis1.entrypoints=redis
+      - traefik.tcp.routers.authentik-redis1.rule=HostSNI(`authentik.redis.int.zhr.one`)
+      - traefik.tcp.routers.authentik-redis1.tls.certresolver=acme
+      - traefik.tcp.services.authentik-redis1.loadbalancer.server.port=6379
 
   server:
     image: ghcr.io/goauthentik/server:2023.4.1
@@ -70,6 +72,11 @@ services:
       - traefik.http.routers.authentik.rule=Host(`auth.zhr.one`)
       - traefik.http.routers.authentik.tls.certresolver=acme
       - traefik.http.services.authentik.loadbalancer.server.port=9000
+      - homepage.group=Infrastructure
+      - homepage.name=Authentik
+      # - homepage.icon=emby.png
+      - homepage.href=https://auth.zhr.one/
+      - homepage.description=Multi-protocol authentication service
       - traefik.tcp.routers.authentik-ldap.entrypoints=ldap
       - traefik.tcp.routers.authentik-ldap.rule=HostSNI(`authentik.ldap.int.zhr.one`)
       - traefik.tcp.routers.authentik-ldap.tls.certresolver=acme
