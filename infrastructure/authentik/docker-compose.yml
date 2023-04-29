@@ -13,10 +13,16 @@ services:
     env_file:
       - docker-compose.postgres.env
     volumes:
-      - /data/authentik/postgres:/var/lib/postgresql/data
+      - /data/authentik/postgres:/var/lib/postgres/data
     networks:
       - pgadmin
+      - traefik
       - authentik
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.authentik-postgres.entrypoints=postgres
+      - traefik.tcp.routers.authentik-postgres.rule=HostSNI(`authentik.postgres.int.zhr.one`)
+      - traefik.tcp.routers.authentik-postgres.tls.certresolver=acme
   redis:
     image: redis
     restart: unless-stopped
@@ -35,7 +41,13 @@ services:
     volumes:
       - /data/authentik/redis:/data
     networks:
+      - traefik
       - authentik
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.authentik-redis.entrypoints=redis
+      - traefik.tcp.routers.authentik-redis.rule=HostSNI(`authentik.redis.int.zhr.one`)
+      - traefik.tcp.routers.authentik-redis.tls.certresolver=acme
 
   server:
     image: ghcr.io/goauthentik/server:2023.4.1
@@ -51,6 +63,17 @@ services:
       - docker-compose.authentik.env
     networks:
       - authentik
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authentik.entrypoints=websecure
+      - traefik.http.routers.authentik.rule=Host(`auth.zhr.one`)
+      - traefik.http.routers.authentik.tls.certresolver=acme
+      - traefik.http.services.authentik.loadbalancer.server.port=9000
+      - traefik.tcp.routers.authentik-ldap.entrypoints=ldap
+      - traefik.tcp.routers.authentik-ldap.rule=HostSNI(`authentik.ldap.int.zhr.one`)
+      - traefik.tcp.routers.authentik-ldap.tls.certresolver=acme
+      - traefik.tcp.services.authentik-ldap.loadbalancer.server.port=3389
   worker:
     image: ghcr.io/goauthentik/server:2023.4.1
     restart: unless-stopped
@@ -73,10 +96,13 @@ networks:
   pgadmin:
     name: pgadmin
     external: true
+  traefik:
+    name: traefik
+    external: true
   authentik:
     name: authentik
     ipam:
       driver: default
       config:
-        - subnet: 172.25.5.0/24
-          gateway: 172.25.5.254
+        - subnet: 172.20.5.0/24
+          gateway: 172.20.5.254

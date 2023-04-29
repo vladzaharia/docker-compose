@@ -4,3 +4,7 @@
 
 # Agebox libs
 _agebox/lib/agebox-*
+
+# Symlinked data dirs
+**/_data
+**/_data/**

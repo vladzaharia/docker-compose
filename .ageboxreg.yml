@@ -3,4 +3,5 @@ file_ids:
 - infrastructure/authentik/docker-compose.authentik.env
 - infrastructure/authentik/docker-compose.postgres.env
 - infrastructure/authentik/docker-compose.redis.env
+- infrastructure/traefik/docker-compose.env
 version: "1"

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    restart: unless-stopped
+    env_file:
+      - docker-compose.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/traefik/:/etc/traefik
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.1.0/24
+          gateway: 172.20.1.254
