@@ -3,5 +3,9 @@ file_ids:
 - infrastructure/authentik/docker-compose.authentik.env
 - infrastructure/authentik/docker-compose.postgres.env
 - infrastructure/authentik/docker-compose.redis.env
+- infrastructure/cloudflareddns/docker-compose.env
 - infrastructure/traefik/docker-compose.env
+- media/servers/plex/.env
+- media/servers/plex/docker-compose.env
+- media/utils/tautulli/.env
 version: "1"

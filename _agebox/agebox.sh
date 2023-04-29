@@ -14,11 +14,11 @@ fi
 PUBKEYARGS="--public-keys $BASEDIR/keys"
 
 if [ "$1" = "encrypt-all" ]; then
-    ARGS="encrypt . --filter .*\.env$"
+    ARGS="encrypt . --filter .*\\.env$"
 elif [ "$1" = "dry-run" ]; then
     ARGS="encrypt . --filter .*\\.env$ --dry-run"
 elif [ "$1" = "decrypt-all" ]; then
-    ARGS="decrypt . --filter .*\.env$"
+    ARGS="decrypt . --filter .*\\.env$"
     PUBKEYARGS=""
 fi
 
