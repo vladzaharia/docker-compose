@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8181 || exit 1
+      start_period: 30s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/tautulli:/config
+    networks:
+      - plex
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.tautulli.entrypoints=websecure
+      - traefik.http.routers.tautulli.rule=Host(`tautulli.polaris.video`)
+      - traefik.http.routers.tautulli.tls.certresolver=acme
+      - traefik.http.services.tautulli.loadbalancer.server.port=8181
+      - homepage.group=Polaris Video
+      - homepage.name=Tautulli
+      # - homepage.icon=emby.png
+      - homepage.href=https://tautulli.polaris.video/
+      - homepage.description=Statistics service for Plex watchtime
+      - homepage.widget.type=tautulli
+      - homepage.widget.url=http://tautulli-tautulli-1:8181
+      - homepage.widget.key=${TAUTULLI_API_KEY}
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  plex:
+    name: plex
+    external: true

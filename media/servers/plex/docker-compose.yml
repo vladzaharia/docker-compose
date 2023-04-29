@@ -1,0 +1,73 @@
+version: '3.8'
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:32400/identity || exit 1
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    env_file:
+      - docker-compose.env
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - VERSION=docker
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/plex:/config
+      - /tmp/transcode:/tmp/transcode
+      - tv:/tv
+      - movies:/movies
+    networks:
+      - plex
+      - traefik
+    ports:
+      - 32400:32400
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.plex.entrypoints=websecure
+      - traefik.http.routers.plex.rule=Host(`media.polaris.video`)
+      - traefik.http.routers.plex.tls.certresolver=acme
+      - traefik.http.services.plex.loadbalancer.server.port=32400
+      - homepage.group=Polaris Video
+      - homepage.name=Plex
+      # - homepage.icon=emby.png
+      - homepage.href=https://media.polaris.video/
+      - homepage.description=Media server for on-demand TV/Movie watching
+      - homepage.widget.type=plex
+      - homepage.widget.url=http://plex-plex-1:32400
+      - homepage.widget.key=${PLEX_TOKEN}
+
+volumes:
+  movies:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/movies
+  tv:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/tv
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  plex:
+    name: plex
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.5.0/24
+          gateway: 172.31.5.254

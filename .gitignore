@@ -2,6 +2,8 @@
 **/docker-compose.env
 **/docker-compose.*.env
 
+**/.env
+
 # Agebox libs
 _agebox/lib/agebox-*
 
