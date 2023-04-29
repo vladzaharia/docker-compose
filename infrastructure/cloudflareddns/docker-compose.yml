@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  cloudflareddns:
+    image: cr.hotio.dev/hotio/cloudflareddns:latest
+    restart: always
+    env_file:
+      - docker-compose.env
+    volumes:
+      - /data/cloudflareddns:/config

@@ -12,7 +12,7 @@ Most services are configured with a corresponding `docker-compose.env` file whic
 
 #### Git hooks
 
-Git hooks are available to help with encrypting on commit as well as decrypting on checkout/merge. They can be installed by running `_agebox/git/setup_git_hooks.sh`.
+Git hooks are available to help with encrypting on commit as well as decrypting on checkout/merge/push. They can be installed by running `_agebox/git/setup_git_hooks.sh`.
 
 #### Agebox binaries
 
