@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:latest
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
@@ -21,6 +21,7 @@ services:
     networks:
       - traefik
     labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.int.zhr.one`)
       - traefik.http.routers.traefik.entrypoints=websecure
@@ -31,6 +32,9 @@ services:
       # - homepage.icon=emby.png
       - homepage.href=https://traefik.int.zhr.one/
       - homepage.description=HTTP/TCP reverse proxy for all services
+      - homepage.widget.type=traefik
+      - homepage.widget.url=https://traefik.int.zhr.one/
+
 networks:
   traefik:
     name: traefik

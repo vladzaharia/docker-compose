@@ -17,6 +17,8 @@ services:
     networks:
       - pgadmin
       - authentik
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
   redis:
     image: redis
     restart: unless-stopped
@@ -36,9 +38,11 @@ services:
       - /data/authentik/redis:/data
     networks:
       - authentik
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
 
   server:
-    image: ghcr.io/goauthentik/server:2023.4.1
+    image: ghcr.io/goauthentik/server:latest
     restart: unless-stopped
     command: server
     depends_on:
@@ -52,7 +56,9 @@ services:
     networks:
       - authentik
       - traefik
+      - homepage
     labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
       - traefik.http.routers.authentik.entrypoints=websecure
       - traefik.http.routers.authentik.rule=Host(`auth.zhr.one`)
@@ -63,8 +69,12 @@ services:
       # - homepage.icon=emby.png
       - homepage.href=https://auth.zhr.one/
       - homepage.description=Multi-protocol authentication service
+      - homepage.widget.type=authentik
+      - homepage.widget.url=http://authentik-server-1:9000
+      - homepage.widget.key=${AUTHENTIK_API_TOKEN}
+
   worker:
-    image: ghcr.io/goauthentik/server:2023.4.1
+    image: ghcr.io/goauthentik/server:latest
     restart: unless-stopped
     command: worker
     depends_on:
@@ -80,13 +90,18 @@ services:
       - docker-compose.authentik.env
     networks:
       - authentik
-
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      
 networks:
   pgadmin:
     name: pgadmin
     external: true
   traefik:
     name: traefik
+    external: true
+  homepage:
+    name: homepage
     external: true
   authentik:
     name: authentik

@@ -18,13 +18,14 @@ services:
     networks:
       - plex
       - traefik
+      - homepage
     labels:
       - traefik.enable=true
       - traefik.http.routers.tautulli.entrypoints=websecure
       - traefik.http.routers.tautulli.rule=Host(`tautulli.polaris.video`)
       - traefik.http.routers.tautulli.tls.certresolver=acme
       - traefik.http.services.tautulli.loadbalancer.server.port=8181
-      - homepage.group=Polaris Video
+      - homepage.group=Media Utilities
       - homepage.name=Tautulli
       # - homepage.icon=emby.png
       - homepage.href=https://tautulli.polaris.video/
@@ -36,6 +37,9 @@ services:
 networks:
   traefik:
     name: traefik
+    external: true
+  homepage:
+    name: homepage
     external: true
   plex:
     name: plex

@@ -18,6 +18,7 @@ services:
       - pgadmin
       - traefik
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.pgadmin.entrypoints=websecure
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.int.zhr.one`)

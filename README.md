@@ -67,7 +67,7 @@ Services which run without any dependencies can run on the default Docker networ
 | `172.25.2.0/24` | `pgadmin`       | Postgres DB Management |
 | `172.25.5.0/24` | `mongo-express` | Mongo Management       |
 
-### `172.30.0.0/16` - Media Services
+### `172.30.0.0/16` - Services
 
 | Subnet           | Network Name    | Description                    |
 | ---------------- | --------------- | ------------------------------ |

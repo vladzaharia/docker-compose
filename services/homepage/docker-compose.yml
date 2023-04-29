@@ -8,11 +8,13 @@ services:
       - /data/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
+      - homepage
       - traefik
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.homepage.entrypoints=websecure
-      - traefik.http.routers.homepage.rule=Host(`home.zhr.one`)
+      - traefik.http.routers.homepage.rule=Host(`services.zhr.one`)
       - traefik.http.routers.homepage.tls.certresolver=acme
       - traefik.http.services.homepage.loadbalancer.server.port=3000
 
@@ -20,3 +22,10 @@ networks:
   traefik:
     name: traefik
     external: true
+  homepage:
+    name: homepage
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.1.0/24
+          gateway: 172.30.1.254

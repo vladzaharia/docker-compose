@@ -9,3 +9,5 @@ services:
     network_mode: bridge
     volumes:
       - /data/cloudflareddns:/config
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

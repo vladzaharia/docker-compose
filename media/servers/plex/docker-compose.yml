@@ -31,6 +31,7 @@ services:
     networks:
       - plex
       - traefik
+      - homepage
     ports:
       - 32400:32400
     labels:
@@ -63,6 +64,9 @@ volumes:
 networks:
   traefik:
     name: traefik
+    external: true
+  homepage:
+    name: homepage
     external: true
   plex:
     name: plex
