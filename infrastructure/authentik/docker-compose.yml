@@ -16,14 +16,7 @@ services:
       - /data/authentik/postgres:/var/lib/postgres/data
     networks:
       - pgadmin
-      - traefik
       - authentik
-    labels:
-      - traefik.enable=true
-      - traefik.tcp.routers.authentik-postgres.entrypoints=postgres
-      - traefik.tcp.routers.authentik-postgres.rule=HostSNI(`authentik.postgres.int.zhr.one`)
-      - traefik.tcp.routers.authentik-postgres.tls.certresolver=acme
-      - traefik.tcp.services.authentik-postgres.loadbalancer.server.port=5432
   redis:
     image: redis
     restart: unless-stopped
@@ -43,13 +36,6 @@ services:
       - /data/authentik/redis:/data
     networks:
       - authentik
-      - traefik
-    labels:
-      - traefik.enable=true
-      - traefik.tcp.routers.authentik-redis1.entrypoints=redis
-      - traefik.tcp.routers.authentik-redis1.rule=HostSNI(`authentik.redis.int.zhr.one`)
-      - traefik.tcp.routers.authentik-redis1.tls.certresolver=acme
-      - traefik.tcp.services.authentik-redis1.loadbalancer.server.port=6379
 
   server:
     image: ghcr.io/goauthentik/server:2023.4.1
@@ -77,10 +63,6 @@ services:
       # - homepage.icon=emby.png
       - homepage.href=https://auth.zhr.one/
       - homepage.description=Multi-protocol authentication service
-      - traefik.tcp.routers.authentik-ldap.entrypoints=ldap
-      - traefik.tcp.routers.authentik-ldap.rule=HostSNI(`authentik.ldap.int.zhr.one`)
-      - traefik.tcp.routers.authentik-ldap.tls.certresolver=acme
-      - traefik.tcp.services.authentik-ldap.loadbalancer.server.port=3389
   worker:
     image: ghcr.io/goauthentik/server:2023.4.1
     restart: unless-stopped

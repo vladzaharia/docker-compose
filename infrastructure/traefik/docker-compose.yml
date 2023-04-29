@@ -4,6 +4,12 @@ services:
   traefik:
     image: traefik:v2.10
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 2s
     env_file:
       - docker-compose.env
     volumes:
@@ -12,10 +18,19 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 8080:8080
     networks:
       - traefik
-
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.rule=Host(`traefik.int.zhr.one`)
+      - traefik.http.routers.traefik.entrypoints=websecure
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.tls.certresolver=acme
+      - homepage.group=Infrastructure
+      - homepage.name=Traefik
+      # - homepage.icon=emby.png
+      - homepage.href=https://traefik.int.zhr.one/
+      - homepage.description=HTTP/TCP reverse proxy for all services
 networks:
   traefik:
     name: traefik
