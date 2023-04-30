@@ -26,6 +26,7 @@ services:
       - traefik.http.routers.prowlarr.entrypoints=websecure
       - traefik.http.routers.prowlarr.rule=Host(`prowlarr.polaris.video`)
       - traefik.http.routers.prowlarr.tls.certresolver=acme
+      - traefik.http.routers.prowlarr.middlewares=authentik@docker
       - traefik.http.services.prowlarr.loadbalancer.server.port=9696
       - homepage.group=Media Pipeline
       - homepage.name=Prowlarr

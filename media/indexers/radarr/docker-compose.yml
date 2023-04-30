@@ -30,6 +30,7 @@ services:
       - traefik.http.routers.radarr.entrypoints=websecure
       - traefik.http.routers.radarr.rule=Host(`radarr.polaris.video`)
       - traefik.http.routers.radarr.tls.certresolver=acme
+      - traefik.http.routers.radarr.middlewares=authentik@docker
       - traefik.http.services.radarr.loadbalancer.server.port=7878
       - homepage.group=Media Pipeline
       - homepage.name=Radarr

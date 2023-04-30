@@ -1,0 +1,62 @@
+version: '3.8'
+services:
+  stash:
+    image: stashapp/stash:latest
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+    # healthcheck:
+    #   test: wget --no-verbose --tries=1 --spider http://localhost:9999 || exit 1
+    #   start_period: 10s
+    #   interval: 5s
+    #   retries: 5
+    #   timeout: 5s
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+      - STASH_PORT=9999
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/stash/config:/root/.stash
+      - /data/stash/metadata:/metadata
+      - /tmp/stash/cache:/cache
+      - /data/stash/blobs:/blobs
+      - /data/stash/generated:/generated
+      - adult:/data
+    networks:
+      - traefik
+      - homepage
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.stash.entrypoints=websecure
+      - traefik.http.routers.stash.rule=Host(`stash.zhr.one`)
+      - traefik.http.routers.stash.tls.certresolver=acme
+      - traefik.http.routers.stash.middlewares=authentik@docker
+      - traefik.http.services.stash.loadbalancer.server.port=9999
+      - homepage.group=Polaris Video
+      - homepage.name=Stash
+      # - homepage.icon=emby.png
+      - homepage.href=https://stash.zhr.one/
+      - homepage.description=Media server for other videos
+
+volumes:
+  adult:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/content/adult
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true

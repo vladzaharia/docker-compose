@@ -30,6 +30,7 @@ services:
       - traefik.http.routers.sonarr.entrypoints=websecure
       - traefik.http.routers.sonarr.rule=Host(`sonarr.polaris.video`)
       - traefik.http.routers.sonarr.tls.certresolver=acme
+      - traefik.http.routers.sonarr.middlewares=authentik@docker
       - traefik.http.services.sonarr.loadbalancer.server.port=8989
       - homepage.group=Media Pipeline
       - homepage.name=Sonarr
