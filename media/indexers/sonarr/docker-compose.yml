@@ -1,0 +1,72 @@
+version: '3.8'
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:develop
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8989/ || exit 1
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/sonarr:/config
+      - tv:/tv
+      - /tmp/downloads:/downloads
+    networks:
+      - sonarr
+      - prowlarr
+      - sabnzbd
+      - plex
+      - traefik
+      - homepage
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.sonarr.entrypoints=websecure
+      - traefik.http.routers.sonarr.rule=Host(`sonarr.polaris.video`)
+      - traefik.http.routers.sonarr.tls.certresolver=acme
+      - traefik.http.services.sonarr.loadbalancer.server.port=8989
+      - homepage.group=Media Pipeline
+      - homepage.name=Sonarr
+      # - homepage.icon=emby.png
+      - homepage.href=https://sonarr.polaris.video/
+      - homepage.description=Searches and requests TV shows to download
+      - homepage.widget.type=sonarr
+      - homepage.widget.url=http://sonarr-sonarr-1:8989
+      - homepage.widget.key=${SONARR_API_KEY}
+
+volumes:
+  tv:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/tv
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true
+  plex:
+    name: plex
+    external: true
+  sabnzbd:
+    name: sabnzbd
+    external: true
+  prowlarr:
+    name: prowlarr
+    external: true
+  sonarr:
+    name: sonarr
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.2.0/24
+          gateway: 172.31.2.254

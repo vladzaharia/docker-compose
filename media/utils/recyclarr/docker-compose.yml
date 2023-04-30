@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    restart: always
+    volumes:
+      - /data/recyclarr:/config
+    networks:
+      - sonarr
+      - radarr
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+
+networks:
+  radarr:
+    name: radarr
+    external: true
+  sonarr:
+    name: sonarr
+    external: true

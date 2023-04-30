@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9696/ || exit 1
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/prowlarr:/config
+    networks:
+      - prowlarr
+      - sabnzbd
+      - traefik
+      - homepage
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.prowlarr.entrypoints=websecure
+      - traefik.http.routers.prowlarr.rule=Host(`prowlarr.polaris.video`)
+      - traefik.http.routers.prowlarr.tls.certresolver=acme
+      - traefik.http.services.prowlarr.loadbalancer.server.port=9696
+      - homepage.group=Media Pipeline
+      - homepage.name=Prowlarr
+      # - homepage.icon=emby.png
+      - homepage.href=https://prowlarr.polaris.video/
+      - homepage.description=Manages indexer configuration on other indexers
+      - homepage.widget.type=prowlarr
+      - homepage.widget.url=http://prowlarr-prowlarr-1:9696
+      - homepage.widget.key=${PROWLARR_API_KEY}
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true
+  sabnzbd:
+    name: sabnzbd
+    external: true
+  prowlarr:
+    name: prowlarr
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.1.0/24
+          gateway: 172.31.1.254

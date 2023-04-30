@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055 || exit 1
+      start_period: 30s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/overseerr:/config
+    networks:
+      - plex
+      - sonarr
+      - radarr
+      - traefik
+      - homepage
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.overseerr.entrypoints=websecure
+      - traefik.http.routers.overseerr.rule=Host(`request.polaris.video`)
+      - traefik.http.routers.overseerr.tls.certresolver=acme
+      - traefik.http.services.overseerr.loadbalancer.server.port=5055
+      - homepage.group=Media Utilities
+      - homepage.name=Overseerr
+      # - homepage.icon=emby.png
+      - homepage.href=https://request.polaris.video/
+      - homepage.description=Service to request movies and TV shows in Plex
+      - homepage.widget.type=overseerr
+      - homepage.widget.url=http://overseerr-overseerr-1:5055
+      - homepage.widget.key=${OVERSEERR_API_KEY}
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true
+  plex:
+    name: plex
+    external: true
+  sonarr:
+    name: sonarr
+    external: true
+  radarr:
+    name: radarr
+    external: true

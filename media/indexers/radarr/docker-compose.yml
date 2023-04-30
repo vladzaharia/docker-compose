@@ -1,0 +1,72 @@
+version: '3.8'
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:7878/ || exit 1
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/radarr:/config
+      - movies:/movies
+      - /tmp/downloads:/downloads
+    networks:
+      - radarr
+      - prowlarr
+      - sabnzbd
+      - plex
+      - traefik
+      - homepage
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.radarr.entrypoints=websecure
+      - traefik.http.routers.radarr.rule=Host(`radarr.polaris.video`)
+      - traefik.http.routers.radarr.tls.certresolver=acme
+      - traefik.http.services.radarr.loadbalancer.server.port=7878
+      - homepage.group=Media Pipeline
+      - homepage.name=Radarr
+      # - homepage.icon=emby.png
+      - homepage.href=https://radarr.polaris.video/
+      - homepage.description=Searches and requests movies to download
+      - homepage.widget.type=radarr
+      - homepage.widget.url=http://radarr-radarr-1:7878
+      - homepage.widget.key=${RADARR_API_KEY}
+
+volumes:
+  movies:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/movies
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true
+  plex:
+    name: plex
+    external: true
+  sabnzbd:
+    name: sabnzbd
+    external: true
+  prowlarr:
+    name: prowlarr
+    external: true
+  radarr:
+    name: radarr
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.3.0/24
+          gateway: 172.31.3.254

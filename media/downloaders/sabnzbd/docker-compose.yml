@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/sabnzbd:/config
+      - /tmp/downloads:/downloads
+    networks:
+      - sabnzbd
+      - traefik
+      - homepage
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.sabnzbd.entrypoints=websecure
+      - traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.polaris.video`)
+      - traefik.http.routers.sabnzbd.tls.certresolver=acme
+      - traefik.http.services.sabnzbd.loadbalancer.server.port=8080
+      - homepage.group=Media Pipeline
+      - homepage.name=Sabnzbd
+      # - homepage.icon=emby.png
+      - homepage.href=https://sabnzbd.polaris.video/
+      - homepage.description=Downloads files from usenet
+      # - homepage.widget.type=sabnzbd
+      # - homepage.widget.url=http://sabnzbd-sabnzbd-1:8080
+      # - homepage.widget.key=${SABNZBD_API_KEY}
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true
+  sabnzbd:
+    name: sabnzbd
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.10.0/24
+          gateway: 172.31.10.254
