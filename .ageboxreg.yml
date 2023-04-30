@@ -1,11 +1,19 @@
 file_ids:
 - database/pgadmin/docker-compose.env
+- infrastructure/authentik/.env
 - infrastructure/authentik/docker-compose.authentik.env
 - infrastructure/authentik/docker-compose.postgres.env
 - infrastructure/authentik/docker-compose.redis.env
 - infrastructure/cloudflareddns/docker-compose.env
 - infrastructure/traefik/docker-compose.env
+- infrastructure/watchtower/.env
+- infrastructure/watchtower/docker-compose.env
+- media/downloaders/sabnzbd/.env
+- media/indexers/prowlarr/.env
+- media/indexers/radarr/.env
+- media/indexers/sonarr/.env
 - media/servers/plex/.env
 - media/servers/plex/docker-compose.env
+- media/utils/overseerr/.env
 - media/utils/tautulli/.env
 version: "1"
