@@ -3,6 +3,7 @@ file_ids:
 - infrastructure/authentik/.env
 - infrastructure/authentik/docker-compose.authentik.env
 - infrastructure/authentik/docker-compose.postgres.env
+- infrastructure/authentik/docker-compose.radius.env
 - infrastructure/authentik/docker-compose.redis.env
 - infrastructure/cloudflareddns/docker-compose.env
 - infrastructure/traefik/docker-compose.env
@@ -12,6 +13,7 @@ file_ids:
 - media/indexers/prowlarr/.env
 - media/indexers/radarr/.env
 - media/indexers/sonarr/.env
+- media/servers/ersatz/docker-compose.env
 - media/servers/plex/.env
 - media/servers/plex/docker-compose.env
 - media/utils/overseerr/.env

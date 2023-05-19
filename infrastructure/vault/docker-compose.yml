@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  vault:
+    image: hashicorp/vault:latest
+    restart: unless-stopped
+    entrypoint: "vault server -config=/vault/config"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8200/ || exit 1
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 2s
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/vault/:/vault
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - vault
+      - traefik
+      - pgadmin
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.vault.rule=Host(`vault.zhr.one`)
+      - traefik.http.routers.vault.entrypoints=websecure
+      - traefik.http.routers.vault.tls.certresolver=acme
+      - homepage.group=Infrastructure
+      - homepage.name=Vault
+      # - homepage.icon=emby.png
+      - homepage.href=https://vault.zhr.one/
+      - homepage.description=Secrets store
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  pgadmin:
+    name: pgadmin
+    external: true
+  vault:
+    name: vault
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.2.0/24
+          gateway: 172.20.2.254

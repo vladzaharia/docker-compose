@@ -20,6 +20,7 @@ services:
       - traefik
       - homepage
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.tautulli.entrypoints=websecure
       - traefik.http.routers.tautulli.rule=Host(`tautulli.polaris.video`)

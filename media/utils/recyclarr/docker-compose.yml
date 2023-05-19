@@ -9,7 +9,7 @@ services:
       - sonarr
       - radarr
     labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
+      - com.centurylinklabs.watchtower.enable=true
 
 networks:
   radarr:

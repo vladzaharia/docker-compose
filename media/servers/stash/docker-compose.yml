@@ -34,6 +34,7 @@ services:
       - traefik
       - homepage
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.stash.entrypoints=websecure
       - traefik.http.routers.stash.rule=Host(`stash.zhr.one`)

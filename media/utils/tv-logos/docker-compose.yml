@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  tv-logos:
+    image: halverneus/static-file-server:latest
+    restart: always
+    environment:
+      - CORS=true
+    volumes:
+      - /data/tv-logos:/web
+    networks:
+      - traefik
+      - homepage
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.tv-logos.entrypoints=websecure
+      - traefik.http.routers.tv-logos.rule=Host(`logos.polaris.video`)
+      - traefik.http.routers.tv-logos.tls.certresolver=acme
+      - traefik.http.services.tv-logos.loadbalancer.server.port=8080
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true

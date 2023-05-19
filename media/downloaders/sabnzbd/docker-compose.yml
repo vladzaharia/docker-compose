@@ -26,15 +26,16 @@ services:
       - traefik.http.routers.sabnzbd.entrypoints=websecure
       - traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.polaris.video`)
       - traefik.http.routers.sabnzbd.tls.certresolver=acme
+      - traefik.http.routers.sabnzbd.middlewares=authentik@docker
       - traefik.http.services.sabnzbd.loadbalancer.server.port=8080
       - homepage.group=Media Pipeline
       - homepage.name=Sabnzbd
       # - homepage.icon=emby.png
       - homepage.href=https://sabnzbd.polaris.video/
       - homepage.description=Downloads files from usenet
-      # - homepage.widget.type=sabnzbd
-      # - homepage.widget.url=http://sabnzbd-sabnzbd-1:8080
-      # - homepage.widget.key=${SABNZBD_API_KEY}
+      - homepage.widget.type=sabnzbd
+      - homepage.widget.url=http://172.30.1.9:8080
+      - homepage.widget.key=${SABNZBD_API_KEY}
 
 networks:
   traefik:

@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  kms:
+    image: mikolatero/vlmcsd:latest
+    restart: unless-stopped
+    network_mode: host

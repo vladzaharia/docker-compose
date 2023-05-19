@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  xteve:
+    image: dnsforge/xteve:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/xteve/:/home/xteve/conf
+      - /data/guide2go/epg:/guide2go
+    networks:
+      - traefik
+      - homepage
+      - xteve
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.xteve.entrypoints=websecure
+      - traefik.http.routers.xteve.rule=Host(`xteve.polaris.video`)
+      - traefik.http.routers.xteve.tls.certresolver=acme
+      - traefik.http.routers.xteve.middlewares=authentik@docker
+      - traefik.http.services.xteve.loadbalancer.server.port=34400
+      - homepage.group=Media Utilities
+      - homepage.name=Ersatz
+      # - homepage.icon=emby.png
+      - homepage.href=https://xteve.polaris.video/
+      - homepage.description=Automated channels based on Plex library contents
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true
+  xteve:
+    name: xteve
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.6.0/24
+          gateway: 172.31.6.254

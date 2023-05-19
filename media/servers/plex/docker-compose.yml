@@ -30,11 +30,13 @@ services:
       - movies:/movies
     networks:
       - plex
+      - xteve
       - traefik
       - homepage
     ports:
       - 32400:32400
     labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
       - traefik.http.routers.plex.entrypoints=websecure
       - traefik.http.routers.plex.rule=Host(`media.polaris.video`)
@@ -67,6 +69,9 @@ networks:
     external: true
   homepage:
     name: homepage
+    external: true
+  xteve:
+    name: xteve
     external: true
   plex:
     name: plex

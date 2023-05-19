@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  guide2go:
+    image: alturismo/guide2go:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/guide2go/epg:/guide2go
+      - /data/guide2go/config:/config
+      - /data/guide2go/images:/images
+    networks:
+      - traefik
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.guide2go.entrypoints=websecure
+      - traefik.http.routers.guide2go.rule=Host(`guide.polaris.video`)
+      - traefik.http.routers.guide2go.tls.certresolver=acme
+      - traefik.http.services.guide2go.loadbalancer.server.port=8080
+
+networks:
+  traefik:
+    name: traefik
+    external: true

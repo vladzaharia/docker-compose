@@ -21,7 +21,7 @@ services:
       - traefik
       - homepage
     labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.prowlarr.entrypoints=websecure
       - traefik.http.routers.prowlarr.rule=Host(`prowlarr.polaris.video`)

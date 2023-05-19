@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  ersatz:
+    image: jasongdove/ersatztv:latest-nvidia
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+    environment:
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/ersatz:/root/.local/share/ersatztv
+      - /tmp/transcode:/tmp/transcode
+      - tv:/tv
+      - movies:/movies
+    networks:
+      - plex
+      - traefik
+      - homepage
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.ersatz.entrypoints=websecure
+      - traefik.http.routers.ersatz.rule=Host(`ersatz.polaris.video`)
+      - traefik.http.routers.ersatz.middlewares=authentik@docker
+      - traefik.http.routers.ersatz.tls.certresolver=acme
+      - traefik.http.services.ersatz.loadbalancer.server.port=8409
+      - homepage.group=Polaris Video
+      - homepage.name=Ersatz
+      # - homepage.icon=emby.png
+      - homepage.href=https://ersatz.polaris.video/
+      - homepage.description=Automated channels based on Plex library contents
+
+volumes:
+  movies:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/movies
+  tv:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/tv
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  homepage:
+    name: homepage
+    external: true
+  plex:
+    name: plex
+    external: true

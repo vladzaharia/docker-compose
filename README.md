@@ -57,6 +57,7 @@ Services which run without any dependencies can run on the default Docker networ
 | Subnet          | Network Name    | Description                    |
 | --------------- | --------------- | ------------------------------ |
 | `172.20.1.0/24` | `traefik`       | Traefik reverse proxy          |
+| `172.20.2.0/24` | `vault    `     | Secrets store                  |
 | `172.20.5.0/24` | `authentik`     | Internal authentication system |
 
 ### `172.25.0.0/16` - Database Management
@@ -81,5 +82,6 @@ Services which run without any dependencies can run on the default Docker networ
 | `172.31.2.0/24`  | `sonarr`        | Access to indexer for TV shows |
 | `172.31.3.0/24`  | `radarr`        | Access to indexer for movies   |
 | `172.31.5.0/24`  | `plex`          | Access to indexer for Plex     |
+| `172.31.6.0/24`  | `xteve`         | HDHR Tuner for IPTV/Ersatz     |
 | `172.31.10.0/24` | `sabnzbd`       | Access to NZB downloader       |
 | `172.31.11.0/24` | `qbittorrent`   | Access to Torrent downloader   |
