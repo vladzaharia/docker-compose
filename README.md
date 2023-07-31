@@ -73,6 +73,7 @@ Services which run without any dependencies can run on the default Docker networ
 | Subnet           | Network Name    | Description                    |
 | ---------------- | --------------- | ------------------------------ |
 | `172.30.1.0/24`  | `homepage`      | Homepage for all services      |
+| `172.30.5.0/24`  | `coder`         | Code environment               |
 
 ### `172.31.0.0/16` - Media Services
 

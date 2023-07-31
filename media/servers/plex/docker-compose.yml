@@ -36,7 +36,7 @@ services:
     ports:
       - 32400:32400
     labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.plex.entrypoints=websecure
       - traefik.http.routers.plex.rule=Host(`media.polaris.video`)

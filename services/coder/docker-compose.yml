@@ -1,0 +1,34 @@
+version: "3.9"
+services:
+  coder:
+    # image: codercom/code-server:latest
+    build: .
+    user: 1000:1000
+    group_add:
+      - "999"
+    volumes:
+      - /home/vlad:/home/coder
+      - /data/coder/.zsh_history:/home/coder/.zsh_history
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+    environment:
+      - DOCKER_USER=vlad
+      - CODER_ENV=true
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.coder.entrypoints=websecure
+      - traefik.http.routers.coder.rule=Host(`code.zhr.one`)
+      - traefik.http.routers.coder.tls.certresolver=acme
+      - traefik.http.routers.coder.middlewares=authentik@docker
+      - traefik.http.services.coder.loadbalancer.server.port=8080
+      - homepage.group=Services
+      - homepage.name=coder
+      - homepage.href=https://code.zhr.one/
+      - homepage.description=Developer environment
+
+networks:
+  traefik:
+    name: traefik
+    external: true

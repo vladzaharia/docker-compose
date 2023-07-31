@@ -8,6 +8,8 @@ services:
     volumes:
       - /data/xteve/:/home/xteve/conf
       - /data/guide2go/epg:/guide2go
+    ports:
+      - 34400:34400
     networks:
       - traefik
       - homepage
