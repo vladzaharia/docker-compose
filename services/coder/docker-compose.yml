@@ -3,6 +3,7 @@ services:
   coder:
     # image: codercom/code-server:latest
     build: .
+    restart: unless-stopped
     user: 1000:1000
     group_add:
       - "999"

@@ -13,6 +13,13 @@ services:
       - PUID=1001
       - PGID=1001
       - TZ=America/Los_Angeles
+      - DOCKER_MODS=ghcr.io/tailscale-dev/docker-mod:main
+      - TAILSCALE_STATE_DIR=/var/lib/tailscale
+      - TAILSCALE_SERVE_MODE=https
+      - TAILSCALE_SERVE_PORT=9696
+      - TAILSCALE_HOSTNAME=prowlarr
+    env_file:
+      - docker-compose.env
     volumes:
       - /data/prowlarr:/config
     networks:

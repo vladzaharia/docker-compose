@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  tsrecorder:
+    image: tailscale/tsrecorder:stable
+    restart: unless-stopped
+    command: /tsrecorder --dst=/data/recordings --statedir=/data/state --ui
+    env_file:
+      - docker-compose.env
+    volumes:
+      - /data/tsrecorder:/data
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
