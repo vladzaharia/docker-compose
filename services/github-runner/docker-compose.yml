@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  tracker:
+    image: myoung34/github-runner:latest
+    restart: unless-stopped
+    environment:
+      REPO_URL: https://github.com/vladzaharia/tracker
+      RUNNER_NAME: truenas-docker-tracker
+      RUNNER_WORKDIR: /tmp/runner/work
+      RUNNER_SCOPE: repo
+      LABELS: linux,x64
+    env_file:
+      - docker-compose.tracker.env
+    volumes:
+      - /data/github-runner/tracker:/tmp/runner/work
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

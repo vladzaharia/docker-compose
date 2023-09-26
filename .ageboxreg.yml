@@ -24,6 +24,8 @@ file_ids:
 - media/utils/overseerr/docker-compose.env
 - media/utils/tautulli/.env
 - media/utils/tautulli/docker-compose.env
+- services/coder/docker-compose.env
+- services/github-runner/docker-compose.tracker.env
 - services/tailscale-golink/docker-compose.env
 - services/tailscale-recorder/docker-compose.env
 version: "1"

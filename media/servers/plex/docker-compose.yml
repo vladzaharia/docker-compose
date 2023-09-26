@@ -23,11 +23,6 @@ services:
       - PGID=1001
       - VERSION=docker
       - TZ=America/Los_Angeles
-      - DOCKER_MODS=ghcr.io/tailscale-dev/docker-mod:main
-      - TAILSCALE_STATE_DIR=/var/lib/tailscale
-      - TAILSCALE_SERVE_MODE=https
-      - TAILSCALE_SERVE_PORT=32400
-      - TAILSCALE_HOSTNAME=plex
     volumes:
       - /data/plex:/config
       - /tmp/transcode:/tmp/transcode
