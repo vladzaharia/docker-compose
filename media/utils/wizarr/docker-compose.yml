@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  wizarr:
+    image: ghcr.io/wizarrrr/wizarr
+    restart: unless-stopped
+    # healthcheck:
+    #   test: wget --no-verbose --tries=1 --spider http://localhost:8181 || exit 1
+    #   start_period: 30s
+    #   interval: 5s
+    #   retries: 5
+    #   timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+      - APP_URL=https://invite.polaris.video
+      - DISABLE_BUILTIN_AUTH=true
+    volumes:
+      - /data/wizarr:/config
+    networks:
+      - plex
+      - jellyfin
+      - traefik
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.wizarr.entrypoints=websecure
+      - traefik.http.routers.wizarr.rule=Host(`invite.polaris.video`)
+      - traefik.http.routers.wizarr.tls.certresolver=acme
+      - traefik.http.routers.wizarr.middlewares=authentik@docker
+      - traefik.http.services.wizarr.loadbalancer.server.port=5690
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  plex:
+    name: plex
+    external: true
+  jellyfin:
+    name: jellyfin
+    external: true

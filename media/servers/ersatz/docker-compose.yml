@@ -57,3 +57,6 @@ networks:
   plex:
     name: plex
     external: true
+  jellyfin:
+    name: jellyfin
+    external: true

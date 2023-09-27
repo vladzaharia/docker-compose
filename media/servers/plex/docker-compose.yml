@@ -23,6 +23,8 @@ services:
       - PGID=1001
       - VERSION=docker
       - TZ=America/Los_Angeles
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:plex
+      - TP_THEME=overseerr
     volumes:
       - /data/plex:/config
       - /tmp/transcode:/tmp/transcode

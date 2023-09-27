@@ -61,7 +61,7 @@ services:
       - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
       - traefik.http.routers.authentik.entrypoints=websecure
-      - traefik.http.routers.authentik.rule=Host(`auth.zhr.one`)
+      - traefik.http.routers.authentik.rule=Host(`auth.zhr.one`, `auth.polaris.rest`)
       - traefik.http.routers.authentik.tls.certresolver=acme
       - traefik.http.routers.authentik.middlewares=authentik-cors
       - traefik.http.services.authentik.loadbalancer.server.port=9000
