@@ -23,7 +23,7 @@ services:
     labels:
       - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
-      - traefik.http.routers.vault.rule=Host(`vault.zhr.one`)
+      - traefik.http.routers.vault.rule=Host(`vault.zhr.one`, `vault.polaris.rest`)
       - traefik.http.routers.vault.entrypoints=websecure
       - traefik.http.routers.vault.tls.certresolver=acme
       - homepage.group=Infrastructure

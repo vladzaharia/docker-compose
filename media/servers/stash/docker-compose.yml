@@ -37,7 +37,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.stash.entrypoints=websecure
-      - traefik.http.routers.stash.rule=Host(`stash.zhr.one`)
+      - traefik.http.routers.stash.rule=Host(`stash.zhr.one`, `stash.polaris.rest`)
       - traefik.http.routers.stash.tls.certresolver=acme
       - traefik.http.routers.stash.middlewares=authentik@docker
       - traefik.http.services.stash.loadbalancer.server.port=9999

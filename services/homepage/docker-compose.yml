@@ -14,7 +14,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.homepage.entrypoints=websecure
-      - traefik.http.routers.homepage.rule=Host(`services.zhr.one`)
+      - traefik.http.routers.homepage.rule=Host(`services.zhr.one`, `services.polaris.rest`)
       - traefik.http.routers.homepage.tls.certresolver=acme
       - traefik.http.routers.homepage.middlewares=authentik@docker
       - traefik.http.services.homepage.loadbalancer.server.port=3000

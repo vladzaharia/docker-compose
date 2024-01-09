@@ -15,16 +15,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - traefik
+      - authentik
     labels:
       - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.portainer-frontend.entrypoints=websecure
-      - traefik.http.routers.portainer-frontend.rule=Host(`portainer.int.zhr.one`)
+      - traefik.http.routers.portainer-frontend.rule=Host(`portainer.int.zhr.one`, `portainer.int.polaris.rest`)
       - traefik.http.routers.portainer-frontend.tls.certresolver=acme
       - traefik.http.routers.portainer-frontend.service=portainer-frontend
       - traefik.http.services.portainer-frontend.loadbalancer.server.port=9000
       - traefik.http.routers.portainer-edge.entrypoints=websecure
-      - traefik.http.routers.portainer-edge.rule=Host(`portainer-edge.int.zhr.one`)
+      - traefik.http.routers.portainer-edge.rule=Host(`portainer-edge.int.zhr.one`, `portainer-edge.int.polaris.rest`)
       - traefik.http.routers.portainer-edge.tls.certresolver=acme
       - traefik.http.routers.portainer-edge.service=portainer-edge
       - traefik.http.services.portainer-edge.loadbalancer.server.port=8000
@@ -37,4 +38,7 @@ services:
 networks:
   traefik:
     name: traefik
+    external: true
+  authentik:
+    name: authentik
     external: true

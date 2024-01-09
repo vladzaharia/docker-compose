@@ -9,6 +9,7 @@ file_ids:
 - infrastructure/traefik/docker-compose.env
 - infrastructure/watchtower/.env
 - infrastructure/watchtower/docker-compose.env
+- media/downloaders/metube/docker-compose.env
 - media/downloaders/sabnzbd/.env
 - media/downloaders/sabnzbd/docker-compose.env
 - media/indexers/prowlarr/.env
@@ -24,8 +25,13 @@ file_ids:
 - media/utils/overseerr/docker-compose.env
 - media/utils/tautulli/.env
 - media/utils/tautulli/docker-compose.env
+- services/coder-v2/docker-compose.coder.env
+- services/coder-v2/docker-compose.postgres.env
 - services/coder/docker-compose.env
 - services/github-runner/docker-compose.tracker.env
+- services/pterodactyl/docker-compose.mysql.env
+- services/pterodactyl/docker-compose.panel.env
+- services/pterodactyl/docker-compose.wings.env
 - services/tailscale-golink/docker-compose.env
 - services/tailscale-recorder/docker-compose.env
 version: "1"

@@ -1,0 +1,33 @@
+version: "3"
+services:
+  metube:
+    image: ghcr.io/alexta69/metube
+    restart: unless-stopped
+    networks:
+      - traefik
+    volumes:
+      - webtv:/downloads
+      - /tmp/downloads:/tmp/downloads
+      - /data/metube:/data
+    env_file:
+      - docker-compose.env
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.metube.entrypoints=websecure
+      - traefik.http.routers.metube.rule=Host(`metube.polaris.video`)
+      - traefik.http.routers.metube.tls.certresolver=acme
+      - traefik.http.routers.metube.middlewares=authentik@docker
+      - traefik.http.services.metube.loadbalancer.server.port=8081
+
+volumes:
+  webtv:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/webtv
+
+networks:
+  traefik:
+    name: traefik
+    external: true

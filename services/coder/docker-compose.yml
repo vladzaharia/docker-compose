@@ -20,7 +20,7 @@ services:
       - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
       - traefik.http.routers.coder.entrypoints=websecure
-      - traefik.http.routers.coder.rule=Host(`code.zhr.one`)
+      - traefik.http.routers.coder.rule=Host(`code.zhr.one`, `code.vlad.gg`)
       - traefik.http.routers.coder.tls.certresolver=acme
       - traefik.http.routers.coder.middlewares=authentik@docker
       - traefik.http.services.coder.loadbalancer.server.port=8080

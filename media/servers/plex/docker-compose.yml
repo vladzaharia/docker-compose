@@ -29,6 +29,7 @@ services:
       - /data/plex:/config
       - /tmp/transcode:/tmp/transcode
       - tv:/tv
+      - webtv:/webtv
       - movies:/movies
     networks:
       - plex
@@ -64,6 +65,11 @@ volumes:
       type: nfs
       o: addr=10.10.0.10,nfsvers=4
       device: :/mnt/data/polaris/tv
+  webtv:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/polaris/webtv
 
 networks:
   traefik:

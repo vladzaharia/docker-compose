@@ -1,0 +1,70 @@
+version: "3.9"
+services:
+  coder:
+    image: ghcr.io/coder/coder:latest
+    ports:
+      - "7080:7080"
+    env_file:
+      - docker-compose.coder.env
+    group_add:
+     - "999" # docker group on host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      database:
+        condition: service_healthy
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.coder-v2.entrypoints=websecure
+      - traefik.http.routers.coder-v2.rule=Host(`code.polaris.rest`)
+      - traefik.http.routers.coder-v2.tls.certresolver=acme
+      - traefik.http.routers.coder-v2.middlewares=coder-headers@docker
+      - traefik.http.services.coder-v2.loadbalancer.server.port=7080
+      - "traefik.http.middlewares.coder-headers.headers.sslRedirect=true" 
+      - "traefik.http.middlewares.coder-headers.headers.stsSeconds=315360000" 
+      - "traefik.http.middlewares.coder-headers.headers.browserXssFilter=true" 
+      - "traefik.http.middlewares.coder-headers.headers.contentTypeNosniff=true" 
+      - "traefik.http.middlewares.coder-headers.headers.forceSTSHeader=true" 
+      - "traefik.http.middlewares.coder-headers.headers.stsIncludeSubdomains=true" 
+      - "traefik.http.middlewares.coder-headers.headers.stsPreload=true" 
+      - "traefik.http.middlewares.coder-headers.headers.frameDeny=true"
+    networks:
+      - coder
+      - traefik
+
+  database:
+    image: "postgres:14.2"
+    ports:
+      - "5432:5432"
+    env_file:
+      - docker-compose.postgres.env
+    volumes:
+      - /data/coder-v2:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - coder
+      - pgadmin
+
+networks:
+  coder:
+    name: coder-v2_default
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.9.0/24
+          gateway: 172.30.9.254
+  traefik:
+    name: traefik
+    external: true
+  pgadmin:
+    name: pgadmin
+    external: true

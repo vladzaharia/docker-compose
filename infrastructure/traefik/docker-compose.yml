@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:v2.10
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
@@ -23,7 +23,7 @@ services:
     labels:
       - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`traefik.int.zhr.one`)
+      - traefik.http.routers.traefik.rule=Host(`traefik.int.zhr.one`, `traefik.int.polaris.rest`)
       - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.tls.certresolver=acme

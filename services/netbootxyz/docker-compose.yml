@@ -21,7 +21,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.netbootxyz.entrypoints=websecure
-      - traefik.http.routers.netbootxyz.rule=Host(`netbootxyz.int.zhr.one`)
+      - traefik.http.routers.netbootxyz.rule=Host(`netbootxyz.int.zhr.one`, `netbootxyz.int.polaris.rest`)
       - traefik.http.routers.netbootxyz.tls.certresolver=acme
       - traefik.http.services.netbootxyz.loadbalancer.server.port=3000
       - homepage.group=Services

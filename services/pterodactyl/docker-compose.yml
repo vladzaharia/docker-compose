@@ -1,0 +1,85 @@
+version: '3.8'
+services:
+  database:
+    image: library/mysql:8.0
+    restart: always
+    networks:
+      - pterodactyl
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - /data/pterodactyl/database:/var/lib/mysql
+    env_file:
+      - docker-compose.mysql.env
+
+  cache:
+    image: redis:alpine
+    restart: always
+    networks:
+      - pterodactyl
+
+  panel:
+    image: ghcr.io/pterodactyl/panel:v1.9.1
+    restart: always
+    networks:
+      - pterodactyl
+      - traefik
+    links:
+      - database
+      - cache
+    volumes:
+      - /data/pterodactyl/panel/var/:/app/var/
+      - /data/pterodactyl/panel/logs/:/app/storage/logs
+      - /data/pterodactyl/panel/nginx/:/etc/nginx/conf.d/
+    env_file:
+      - docker-compose.panel.env
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.pterodactyl.entrypoints=websecure
+      - traefik.http.routers.pterodactyl.rule=Host(`games.polaris.rest`)
+      - traefik.http.routers.pterodactyl.tls.certresolver=acme
+      - traefik.http.services.pterodactyl.loadbalancer.server.port=80
+  wings:
+    image: ghcr.io/pterodactyl/wings:v1.6.4
+    env_file:
+      - docker-compose.wings.env
+    restart: always
+    networks:
+      - pterodactyl
+      - traefik
+    ports:
+      - 2022:2022
+    tty: true
+    environment:
+      TZ: America/Los_Angeles
+      WINGS_UID: 1001
+      WINGS_GID: 1001
+      WINGS_USERNAME: pterodactyl
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers/:/var/lib/docker/containers/
+      - /tmp/pterodactyl/:/tmp/pterodactyl/
+      - /data/pterodactyl/wings/etc/:/etc/pterodactyl/
+      - /data/pterodactyl/wings/logs:/var/log/pterodactyl/
+      - /data/pterodactyl/wings/data:/data/pterodactyl/wings/data/
+      - /data/pterodactyl/wings/ssl:/etc/letsencrypt/
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.pterodactyl-node.entrypoints=websecure
+      - traefik.http.routers.pterodactyl-node.rule=Host(`games-node.polaris.rest`)
+      - traefik.http.routers.pterodactyl-node.tls.certresolver=acme
+      - traefik.http.services.pterodactyl-node.loadbalancer.server.port=8080
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  pterodactyl:
+    name: pterodactyl
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.10.0/24
+          gateway: 172.30.10.254
