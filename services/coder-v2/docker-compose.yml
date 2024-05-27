@@ -2,6 +2,7 @@ version: "3.9"
 services:
   coder:
     image: ghcr.io/coder/coder:latest
+    restart: unless-stopped
     ports:
       - "7080:7080"
     env_file:
@@ -10,6 +11,8 @@ services:
      - "999" # docker group on host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /data:/data
+      - /docker:/docker
     depends_on:
       database:
         condition: service_healthy
@@ -17,7 +20,7 @@ services:
       - com.centurylinklabs.watchtower.monitor-only=true
       - traefik.enable=true
       - traefik.http.routers.coder-v2.entrypoints=websecure
-      - traefik.http.routers.coder-v2.rule=Host(`code.polaris.rest`)
+      - traefik.http.routers.coder-v2.rule=HostRegexp(`code.polaris.rest`, `{subdomain:.+}.code.polaris.rest`)	
       - traefik.http.routers.coder-v2.tls.certresolver=acme
       - traefik.http.routers.coder-v2.middlewares=coder-headers@docker
       - traefik.http.services.coder-v2.loadbalancer.server.port=7080
@@ -35,6 +38,7 @@ services:
 
   database:
     image: "postgres:14.2"
+    restart: unless-stopped
     ports:
       - "5432:5432"
     env_file:

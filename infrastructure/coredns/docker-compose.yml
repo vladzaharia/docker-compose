@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  coredns:
+    image: coredns/coredns:latest
+    restart: always
+    ports:
+      - "8053:53"
+    networks:
+      coredns:
+        ipv4_address: 172.20.50.100
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  tailscale:
+    image: tailscale/tailscale:latest
+    hostname: coredns
+    env_file:
+      - docker-compose.env
+    networks:
+      - coredns
+    volumes:
+      - /data/coredns/tailscale/state:/var/lib/tailscale
+      - /data/coredns/tailscale/config:/config
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+networks:
+  coredns:
+    name: coredns
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.50.0/24
+          gateway: 172.20.50.254

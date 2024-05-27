@@ -28,6 +28,7 @@ services:
       - /data/tdarr/logs:/app/logs
       - movies:/media/movies
       - tv:/media/tv
+      - musicvideo:/media/musicvideo
       - /tmp/transcode:/tmp/transcode
     labels:
       - com.centurylinklabs.watchtower.enable=true
@@ -57,6 +58,11 @@ volumes:
       type: nfs
       o: addr=10.10.0.10,nfsvers=4
       device: :/mnt/data/polaris/tv
+  musicvideo:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/content/musicvideo
 
 networks:
   traefik:

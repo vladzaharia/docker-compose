@@ -68,7 +68,7 @@ services:
       - homepage.group=Infrastructure
       - homepage.name=Authentik
       # - homepage.icon=emby.png
-      - homepage.href=https://auth.zhr.one/
+      - homepage.href=https://auth.polaris.rest/
       - homepage.description=Multi-protocol authentication service
       - homepage.widget.type=authentik
       - homepage.widget.url=http://authentik-server-1:9000

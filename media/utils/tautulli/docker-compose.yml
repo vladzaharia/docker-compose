@@ -3,12 +3,12 @@ services:
   tautulli:
     image: lscr.io/linuxserver/tautulli:latest
     restart: unless-stopped
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8181 || exit 1
-      start_period: 30s
-      interval: 5s
-      retries: 5
-      timeout: 5s
+#    healthcheck:
+#      test: wget --no-verbose --tries=1 --spider http://localhost:8181 || exit 1
+#      start_period: 30s
+#      interval: 5s
+#      retries: 5
+#      timeout: 5s
     environment:
       - PUID=1001
       - PGID=1001

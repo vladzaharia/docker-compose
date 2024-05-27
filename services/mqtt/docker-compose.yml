@@ -1,0 +1,30 @@
+version: '3.5'
+services:
+  mqtt:
+    restart: always
+    image: emqx/emqx:latest
+    volumes:
+      - "/data/mqtt/data:/opt/emqx/data"
+      - "/data/mqtt/logs:/opt/emqx/logs"
+    ports:
+      - 1883:1883
+    networks:
+      - traefik
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.mqtt.rule=Host(`mqtt.zhr.one`, `mqtt.polaris.rest`)
+      - traefik.http.routers.mqtt.entrypoints=websecure
+      - traefik.http.routers.mqtt.tls.certresolver=acme
+      - traefik.http.services.mqtt.loadbalancer.server.port=18083
+      # - traefik.tcp.services.mqtt.loadbalancer.server.port=1883
+      # - traefik.tcp.services.mqtt_ws.loadbalancer.server.port=9001
+      # - traefik.tcp.routers.mqtt.entrypoints=mqtt
+      # - traefik.tcp.routers.mqtt.rule=HostSNI(`*`)
+      # - traefik.tcp.routers.mqtt.service=mqtt
+      # - traefik.tcp.routers.mqtt.tls.certresolver=acme
+
+networks:
+  traefik:
+    name: traefik
+    external: true

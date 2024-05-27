@@ -17,6 +17,8 @@ services:
     networks:
       - pgadmin
       - traefik
+    ports:
+      - 7588:80
     labels:
       - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true

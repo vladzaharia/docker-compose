@@ -1,0 +1,95 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:11
+    env_file:
+      - docker-compose.postgres.env
+    volumes:
+      - /data/boundary/postgres:/var/lib/postgres/data
+    networks:
+      - boundary
+      - pgadmin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  db-init:
+    image: hashicorp/boundary:latest
+    command: ["database", "migrate", "-config", "/boundary/boundary.hcl"]
+    volumes:
+      - "/data/boundary/config:/boundary"
+    env_file:
+      - docker-compose.boundary.env
+    networks:
+      - boundary
+    cap_add:
+      - IPC_LOCK
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  boundary:
+    image: hashicorp/boundary:latest
+    command: ["server", "-config", "/boundary/boundary.hcl"]
+    volumes:
+      - "/data/boundary/config:/boundary"
+    # ports:
+    #   - "9200:9200"
+    #   - "9201:9201"
+    #   - "9202:9202"
+    env_file:
+      - docker-compose.boundary.env
+    networks:
+      - boundary
+      - traefik
+      - vault
+    cap_add:
+      - IPC_LOCK
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-O-", "http://boundary:9200"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.boundary.rule=Host(`boundary.zhr.one`, `boundary.polaris.rest`)
+      - traefik.http.routers.boundary.entrypoints=websecure
+      - traefik.http.routers.boundary.tls.certresolver=acme
+      - traefik.http.services.boundary.loadbalancer.server.port=9200
+
+# Boundary controller is the last service to start and may not be fully up
+# by the time the docker compose command returns, so we force a wait by
+# depending a placeholder on the controller healthcheck
+  wait:
+    image: busybox:latest
+    command: ["sleep", "1"]
+    networks:
+      - boundary
+    depends_on:
+      boundary:
+        condition: service_healthy
+
+networks:
+  pgadmin:
+    name: pgadmin
+    external: true
+  traefik:
+    name: traefik
+    external: true
+  vault:
+    name: vault
+    external: true
+  boundary:
+    name: boundary
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.10.0/24
+          gateway: 172.20.10.254

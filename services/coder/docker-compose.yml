@@ -10,6 +10,8 @@ services:
     volumes:
       - /home/vlad:/home/coder
       - /data/coder/.zsh_history:/home/coder/.zsh_history
+      - /docker:/docker
+      - /data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - traefik

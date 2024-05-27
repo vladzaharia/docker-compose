@@ -12,11 +12,14 @@ services:
             capabilities: [gpu]
     environment:
       - TZ=America/Los_Angeles
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - /data/ersatz:/root/.local/share/ersatztv
       - /tmp/transcode:/tmp/transcode
       - tv:/tv
       - movies:/movies
+      - musicvideo:/musicvideo
     networks:
       - plex
       - traefik
@@ -46,6 +49,11 @@ volumes:
       type: nfs
       o: addr=10.10.0.10,nfsvers=4
       device: :/mnt/data/polaris/tv
+  musicvideo:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/content/musicvideo
 
 networks:
   traefik:

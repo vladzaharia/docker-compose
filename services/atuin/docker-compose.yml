@@ -1,0 +1,52 @@
+version: '3.5'
+services:
+  atuin:
+    restart: always
+    image: ghcr.io/atuinsh/atuin:latest
+    command: server start
+    volumes:
+      - "/data/atuin/config:/config"
+    networks:
+      - atuin
+      - traefik
+    env_file:
+      - docker-compose.atuin.env
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.atuin.entrypoints=websecure
+      - traefik.http.routers.atuin.rule=Host(`atuin.polaris.rest`)
+      - traefik.http.routers.atuin.tls.certresolver=acme
+      - traefik.http.services.atuin.loadbalancer.server.port=8888
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - docker-compose.postgres.env
+    volumes:
+      - /data/atuin/postgres:/var/lib/postgres/data
+    networks:
+      - pgadmin
+      - atuin
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+networks:
+  pgadmin:
+    name: pgadmin
+    external: true
+  traefik:
+    name: traefik
+    external: true
+  atuin:
+    name: atuin
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.15.0/24
+          gateway: 172.20.15.254

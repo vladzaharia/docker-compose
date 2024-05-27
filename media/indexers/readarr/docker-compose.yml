@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8787/ || exit 1
+      start_period: 10s
+      interval: 5s
+      retries: 5
+      timeout: 5s
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:readarr
+      - TP_THEME=overseerr
+    volumes:
+      - /data/readarr:/config
+      - books:/books
+      - /tmp/downloads:/downloads
+    networks:
+      - prowlarr
+      - sabnzbd
+      - calibre
+      - traefik
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - traefik.enable=true
+      - traefik.http.routers.readarr.entrypoints=websecure
+      - traefik.http.routers.readarr.rule=Host(`readarr.polaris.rest`, `readarr.polaris.video`)
+      - traefik.http.routers.readarr.tls.certresolver=acme
+      - traefik.http.routers.readarr.middlewares=authentik@docker
+      - traefik.http.services.readarr.loadbalancer.server.port=8787
+
+volumes:
+  books:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/content/books
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  sabnzbd:
+    name: sabnzbd
+    external: true
+  prowlarr:
+    name: prowlarr
+    external: true
+  calibre:
+    name: calibre
+    external: true

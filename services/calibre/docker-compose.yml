@@ -1,0 +1,76 @@
+version: "3.9"
+services:
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+    volumes:
+      - /data/calibre:/config
+      - books:/books
+    networks:
+      calibre:
+        ipv4_address: 172.30.15.100
+      traefik:
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.calibre.entrypoints=websecure
+      - traefik.http.routers.calibre.rule=Host(`calibre.int.polaris.rest`)
+      - traefik.http.routers.calibre.tls.certresolver=acme
+      - traefik.http.routers.calibre.service=calibre
+      - traefik.http.services.calibre.loadbalancer.server.port=8080
+      - traefik.http.routers.calibre-cs.entrypoints=websecure
+      - traefik.http.routers.calibre-cs.rule=Host(`calibre.polaris.rest`)
+      - traefik.http.routers.calibre-cs.tls.certresolver=acme
+      - traefik.http.routers.calibre-cs.service=calibre-cs
+      - traefik.http.services.calibre-cs.loadbalancer.server.port=8081
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    restart: unless-stopped
+    volumes:
+      - /data/calibre-web:/config
+      - books:/books
+    networks:
+      - traefik
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Los_Angeles
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.calibre-web.entrypoints=websecure
+      - traefik.http.routers.calibre-web.rule=Host(`books.polaris.rest`)
+      - traefik.http.routers.calibre-web.tls.certresolver=acme
+      - traefik.http.routers.calibre-web.middlewares=authentik@docker
+      - traefik.http.services.calibre-web.loadbalancer.server.port=8083
+      - homepage.group=Services
+      - homepage.name=calibre
+      - homepage.href=https://books.polaris.rest/
+      - homepage.description=Ebooks
+
+volumes:
+  books:
+    driver_opts:
+      type: nfs
+      o: addr=10.10.0.10,nfsvers=4
+      device: :/mnt/data/content/books
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  calibre:
+    name: calibre
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.15.0/24
+          gateway: 172.30.15.254

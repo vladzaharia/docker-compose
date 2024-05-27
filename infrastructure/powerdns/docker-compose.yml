@@ -1,0 +1,93 @@
+version: '2.4'
+
+services:
+  recursor:
+    image: pschiffe/pdns-recursor:${RECURSOR_TAG:-latest}
+    networks:
+      - powerdns
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - docker-compose.resolver.env
+    ulimits:
+      nofile:
+        soft: 5000
+        hard: 5000
+
+  postgres:
+    image: postgres:16-alpine
+    networks:
+      - powerdns
+      - pgadmin
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/powerdns/postgres:/var/lib/postgres/data:Z
+    env_file:
+      - docker-compose.postgres.env
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+      timeout: 10s
+      retries: 5
+
+  powerdns:
+    image: pschiffe/pdns-pgsql:${PDNS_PGSQL_TAG:-latest}
+    networks:
+      - powerdns
+      - traefik
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - docker-compose.powerdns.env
+    depends_on:
+      - postgres
+    ports:
+      - 5353:53
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.powerdns.entrypoints=websecure
+      - traefik.http.routers.powerdns.rule=Host(`pdns.zhr.one`, `pdns.polaris.rest`)
+      - traefik.http.routers.powerdns.tls.certresolver=acme
+#      - traefik.http.routers.powerdns.middlewares=authentik@docker
+      - traefik.http.services.powerdns.loadbalancer.server.port=8081
+
+  admin:
+    image: powerdnsadmin/pda-legacy
+#    image: pschiffe/pdns-admin
+    networks:
+      - powerdns
+      - traefik
+    volumes:
+      - /data/powerdns/admin:/data
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - docker-compose.admin.env
+    depends_on:
+      - postgres
+      - powerdns
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+      - traefik.enable=true
+      - traefik.http.routers.powerdns-admin.entrypoints=websecure
+      - traefik.http.routers.powerdns-admin.rule=Host(`pdns.int.zhr.one`, `pdns.int.polaris.rest`)
+      - traefik.http.routers.powerdns-admin.tls.certresolver=acme
+#      - traefik.http.routers.powerdns-admin.middlewares=authentik@docker
+      - traefik.http.services.powerdns-admin.loadbalancer.server.port=80
+
+networks:
+  pgadmin:
+    name: pgadmin
+    external: true
+  traefik:
+    name: traefik
+    external: true
+  powerdns:
+    name: powerdns
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.75.0/24
+          gateway: 172.20.75.254
+
+
+
